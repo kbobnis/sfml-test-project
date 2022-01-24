@@ -34,7 +34,9 @@ int main()
             x += 0.01;
         }
 
-        shape.setPosition(x, y);
+        sf::Vector2i mouse = sf::Mouse::getPosition(window); // window is a sf::Window
+
+        shape.setPosition(mouse.x - 50, mouse.y - 50);
 
         window.clear();
         window.draw(shape);
