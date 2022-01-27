@@ -29,7 +29,7 @@ Board::Board(const int x, const int y, const int cellWidth, int cellHeight, floa
 	{
 		for (int j = 0; j < y; ++j)
 		{
-			cells[i][j] = false;
+			cells[i][j] = Empty;
 		}
 	}
 
@@ -41,30 +41,7 @@ void Board::createNewPiece()
 {
 	currentPiece = static_cast<PieceType>(rand() % PieceType::Z);
 	currentPieceX = x / 2;
-}
-
-void Board::drawPiece(RenderTarget *window)
-{
-	cell.setFillColor(Color::Green);
-
-	const std::vector<bool> shape = pieces[currentPiece];
-
-	for (int i = 0; i < 4; i++)
-	{ //first line
-		if (shape[i])
-		{
-			cell.setPosition(i + currentPieceX, 0 + currentPieceY);
-			window->draw(cell);
-		}
-	}
-	for (int i = 4; i < 8; i++)
-	{ //second line
-		if (shape[i])
-		{
-			cell.setPosition(i + currentPieceX, 0 + currentPieceY);
-			window->draw(cell);
-		}
-	}
+	currentPieceY = 0;
 }
 
 void Board::draw(RenderTarget *window)
@@ -75,11 +52,14 @@ void Board::draw(RenderTarget *window)
 		{
 			switch (cells[x][y])
 			{
-				case false:
+				case Empty:
 					cell.setFillColor(Color::Black);
 					break;
-				case true:
+				case Filled:
 					cell.setFillColor(Color::Blue);
+					break;
+				case PiecePart:
+					cell.setFillColor(Color::Green);
 					break;
 			}
 
@@ -88,7 +68,6 @@ void Board::draw(RenderTarget *window)
 		}
 	}
 
-	drawPiece(window);
 }
 
 void Board::tick(const sf::Time &delta)
@@ -97,28 +76,129 @@ void Board::tick(const sf::Time &delta)
 
 	if (sinceLastPieceMove > moveTime)
 	{
-		currentPieceY++;
+		if (this->canMove(0, 1) == false)
+		{
+			vector<Pair> pieceParts = getPieceParts();
+			for (int i = 0; i < pieceParts.size(); ++i)
+			{
+				cells[pieceParts[i].x][pieceParts[i].y] = Filled;
+				createNewPiece();
+			}
+		} else
+		{
+			currentPieceY++;
+		}
 		sinceLastPieceMove -= moveTime;
 	}
+	updateBoard();
 }
 
 void Board::handleKeyPress(Keyboard::Key key)
 {
+	vector<Pair> piecePartsLocations = getPieceParts();
+
 	switch (key)
 	{
 		case Keyboard::Left:
-			currentPieceX--;
+			if (this->canMove(-1, 0))
+			{
+				currentPieceX--;
+			}
 			break;
 		case Keyboard::Right:
-			currentPieceX++;
+			if (this->canMove(1, 0))
+			{
+				currentPieceX++;
+			}
+			break;
+		case Keyboard::Down:
+			if (this->canMove(0, 1))
+			{
+				currentPieceY++;
+			}
 			break;
 	}
+}
+
+void Board::updateBoard()
+{
+	for (int x = 0; x < cells.size(); x++)
+	{
+		for (int y = 0; y < cells[x].size(); y++)
+		{
+			if (cells[x][y] == PiecePart)
+			{
+				cells[x][y] = Empty;
+			}
+		}
+	}
+
+	const std::vector<bool> shape = pieces[currentPiece];
+
+	for (int i = 0; i < 8; i++)
+	{ //first line
+		if (shape[i])
+		{
+			int xPos = i % 4 + currentPieceX;
+			int yPos = i / 4 + currentPieceY;
+
+			cells[xPos][yPos] = PiecePart;
+		}
+	}
+}
+
+vector<Pair> Board::getPieceParts()
+{
+	vector<Pair> piecePartsLocations;
+	for (int x = 0; x < cells.size(); x++)
+	{
+		for (int y = 0; y < cells[x].size(); y++)
+		{
+			if (cells[x][y] == PiecePart)
+			{
+				piecePartsLocations.push_back(Pair(x, y));
+			}
+		}
+	}
+	return piecePartsLocations;
+}
+
+bool Board::canMove(int relativeX, int relativeY)
+{
+	bool canMove = true;
+	vector<Pair> piecePartsLocations = getPieceParts();
+	//find all piece parts and check if there is no end of screen or brigh on the left of it
+	for (int i = 0; i < piecePartsLocations.size(); ++i)
+	{
+		//x
+		if (piecePartsLocations[i].x + relativeX > this->x)
+		{
+			canMove = false;
+		} else if (piecePartsLocations[i].x + relativeX < 0)
+		{
+			canMove = false;
+		} else if (cells[piecePartsLocations[i].x + relativeX][piecePartsLocations[i].y] == Filled)
+		{
+			canMove = false;
+		} else if (piecePartsLocations[i].y + relativeY >= this->y) //y
+		{
+			canMove = false;
+		} else if (piecePartsLocations[i].y + relativeY < 0)
+		{
+			canMove = false;
+		} else if (cells[piecePartsLocations[i].x + relativeX][piecePartsLocations[i].y + relativeY] == Filled)
+		{
+			canMove = false;
+		}
+	}
+
+	return canMove;
 }
 
 
 std::map<PieceType, std::vector<bool>> pieces = {
 		{
-				PieceType::I, {1, 1, 1, 1}
+				PieceType::I, {1, 1, 1, 1, 0, 0, 0, 0}
 		},
 		{
 				PieceType::J, {
@@ -151,3 +231,9 @@ std::map<PieceType, std::vector<bool>> pieces = {
 						              0, 1, 1, 0}
 		},
 };
+
+Pair::Pair(int x, int y)
+{
+	this->x = x;
+	this->y = y;
+}

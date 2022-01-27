@@ -47,12 +47,8 @@ int main()
 
 		board.tick(clock.restart());
 
-		sf::Vector2i mouse = sf::Mouse::getPosition(window);
-		//cell.setPosition(mouse.x - 20, mouse.y - 20);
-
 		window.clear();
 		board.draw(&window);
-		//window.draw(cell);
 		window.display();
 	}
 }
