@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include "Board.cpp"
+#include "Board.h"
 
 using namespace sf;
 
@@ -19,7 +19,8 @@ int main()
 	float cellHeight = height / CellsCountVertical;
 	float cellWidth = width / CellsCountHorizontal;
 
-	Board board(CellsCountHorizontal, CellsCountVertical, cellWidth, cellHeight);
+	Board board(CellsCountHorizontal, CellsCountVertical, cellWidth, cellHeight, 1);
+	Clock clock;
 
 	while (window.isOpen())
 	{
@@ -34,12 +35,17 @@ int main()
 			// keyboard interrupt
 			if (e.type == Event::KeyPressed)
 			{
-				if (e.key.code == Keyboard::Escape)
+				switch (e.key.code)
 				{
-					window.close();
+					case Keyboard::Escape:
+						window.close();
+						break;
 				}
+				board.handleKeyPress(e.key.code);
 			}
 		}
+
+		board.tick(clock.restart());
 
 		sf::Vector2i mouse = sf::Mouse::getPosition(window);
 		//cell.setPosition(mouse.x - 20, mouse.y - 20);
