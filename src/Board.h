@@ -25,7 +25,7 @@ class Board
 {
 private:
 	const float moveTime;
-	int x, y;
+	int columns, rows;
 	int cellWidth, cellHeight;
 	vector<vector<FillType>> cells;
 	RectangleShape cell;
@@ -36,13 +36,13 @@ private:
 	int rotation; //value 0, 1, 2, 3
 
 public:
-	Board(const int x, const int y, const int cellWidth, int cellHeight, float moveTime);
+	Board(const int columns, const int y, const int cellWidth, int cellHeight, float moveTime);
 
 	void createNewPiece();
 
 	void draw(RenderTarget *window);
 
-	void tick(const sf::Time &delta);
+	void movePieceDown(const sf::Time &delta);
 
 	void handleKeyPress(Keyboard::Key key);
 
@@ -58,5 +58,6 @@ public:
 
 	void rotate();
 
+	void clearLines();
 };
 

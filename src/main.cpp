@@ -45,7 +45,9 @@ int main()
 			}
 		}
 
-		board.tick(clock.restart());
+		board.movePieceDown(clock.restart());
+		board.clearLines();
+
 
 		window.clear();
 		board.draw(&window);

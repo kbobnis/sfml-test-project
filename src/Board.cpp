@@ -10,24 +10,24 @@
 using namespace sf;
 using namespace std;
 
-Board::Board(const int x, const int y, const int cellWidth, int cellHeight, float moveTime) :
+Board::Board(const int columns, const int y, const int cellWidth, int cellHeight, float moveTime) :
 		moveTime(moveTime),
 		cell(Vector2f(cellWidth, cellHeight))
 {
-	this->x = x;
-	this->y = y;
+	this->columns = columns;
+	this->rows = y;
 	this->cellWidth = cellWidth;
 	this->cellHeight = cellHeight;
 
 	this->createNewPiece();
 
-	cells.resize(x);
-	for (int i = 0; i < x; ++i)
+	cells.resize(columns);
+	for (int i = 0; i < columns; ++i)
 	{
 		cells[i].resize(y);
 	}
 
-	for (int i = 0; i < x; ++i)
+	for (int i = 0; i < columns; ++i)
 	{
 		for (int j = 0; j < y; ++j)
 		{
@@ -42,15 +42,15 @@ Board::Board(const int x, const int y, const int cellWidth, int cellHeight, floa
 void Board::createNewPiece()
 {
 	currentPiece = static_cast<PieceType>(rand() % PieceType::Z);
-	currentPieceX = x / 2;
+	currentPieceX = columns / 2;
 	currentPieceY = 0;
 }
 
 void Board::draw(RenderTarget *window)
 {
-	for (int y = 0; y < this->y; y++)
+	for (int y = 0; y < this->rows; y++)
 	{
-		for (int x = 0; x < this->x; x++)
+		for (int x = 0; x < this->columns; x++)
 		{
 			switch (cells[x][y])
 			{
@@ -72,7 +72,7 @@ void Board::draw(RenderTarget *window)
 
 }
 
-void Board::tick(const sf::Time &delta)
+void Board::movePieceDown(const sf::Time &delta)
 {
 	sinceLastBoardTick += delta.asMicroseconds();
 
@@ -144,20 +144,20 @@ void Board::updateCells()
 		int rotatedY = shape[i].y;
 
 		///rotate 90' point
-		//x' = -(y - py) + px
-		//y' = (x - px) + py
+		//columns' = -(rows - py) + px
+		//rows' = (columns - px) + py
 		Pair rotationPoint(1, 0);
 
 		for (int j = 0; j < rotation; ++j)
 		{
 			int tmp = rotatedX;
-			rotatedX = - (rotatedY - rotationPoint.y) + rotationPoint.x;
+			rotatedX = -(rotatedY - rotationPoint.y) + rotationPoint.x;
 			rotatedY = (tmp - rotationPoint.x) + rotationPoint.y;
 
 			//rotate rotation point
-			//int tmpRP = rotationPoint.x;
-			//rotationPoint.x = - rotationPoint.y;
-			//rotationPoint.y = tmpRP;
+			//int tmpRP = rotationPoint.columns;
+			//rotationPoint.columns = - rotationPoint.rows;
+			//rotationPoint.rows = tmpRP;
 		}
 
 		int xPos = currentPieceX - 2 + rotatedX;
@@ -190,7 +190,7 @@ bool Board::canMove(int relativeX, int relativeY)
 	//find all piece parts and check if there is no end of screen or brigh on the left of it
 	for (int i = 0; i < piecePartsLocations.size(); ++i)
 	{
-		if (piecePartsLocations[i].x + relativeX >= this->x)
+		if (piecePartsLocations[i].x + relativeX >= this->columns)
 		{
 			canMove = false;
 		} else if (piecePartsLocations[i].x + relativeX < 0)
@@ -199,7 +199,7 @@ bool Board::canMove(int relativeX, int relativeY)
 		} else if (cells[piecePartsLocations[i].x + relativeX][piecePartsLocations[i].y] == Filled)
 		{
 			canMove = false;
-		} else if (piecePartsLocations[i].y + relativeY >= this->y) //y
+		} else if (piecePartsLocations[i].y + relativeY >= this->rows) //rows
 		{
 			canMove = false;
 		} else if (piecePartsLocations[i].y + relativeY < 0)
@@ -233,6 +233,49 @@ void Board::rotate()
 {
 	this->rotation++;
 	this->rotation %= 4;
+}
+
+void Board::clearLines()
+{
+	vector<Pair> pieceParts = getPieceParts();
+
+	vector<bool> rowsToClear;
+	for (int y = 0; y < this->rows; y++)
+	{
+		rowsToClear.push_back(true);
+		for (int x = 0; x < this->columns; x++)
+		{
+			if (cells[x][y] == Empty || cells[x][y] == PiecePart)
+			{
+				rowsToClear[y] = false;
+				break;
+			}
+		}
+	}
+
+	for (int y = 0; y < this->rows; y++)
+	{
+		if (rowsToClear[y])
+		{
+			for (int x = 0; x < cells.size(); x++)
+			{
+				cells[x][y] = Empty;
+			}
+		}
+	}
+
+	for (int y = this->rows - 1; y >= 0; y--)
+	{
+		if (rowsToClear[y])
+		{
+			for (int y2 = y; y2 > 0; y2--)
+			{
+				for(int x=0; x < this->columns; x++){
+					cells[x][y2] = cells[x][y2-1];
+				}
+			}
+		}
+	}
 }
 
 
