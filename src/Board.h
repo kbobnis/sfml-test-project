@@ -36,9 +36,10 @@ private:
 	vector<vector<FillType>> cells;
 	RectangleShape cell;
 
-	float sinceLastPieceMove;
+	long sinceLastBoardTick;
 	PieceType currentPiece;
 	int currentPieceX = 0, currentPieceY = 0;
+	int rotation; //value 0, 1, 2, 3
 
 public:
 	Board(const int x, const int y, const int cellWidth, int cellHeight, float moveTime);
@@ -58,6 +59,11 @@ public:
 	bool canMove(int relativeX, int relativeY);
 
 	void turnPieceIntoFill();
+
+	bool canRotate();
+
+	void rotate();
+
 };
 
-std::map<PieceType, std::vector<bool>> extern pieces;
+std::map<PieceType, std::vector<Pair>> extern pieces;

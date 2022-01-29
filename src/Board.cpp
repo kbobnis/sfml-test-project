@@ -4,6 +4,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "Board.h"
+#include <iostream>
 
 using namespace sf;
 using namespace std;
@@ -72,9 +73,9 @@ void Board::draw(RenderTarget *window)
 
 void Board::tick(const sf::Time &delta)
 {
-	sinceLastPieceMove += delta.asSeconds();
+	sinceLastBoardTick += delta.asMicroseconds();
 
-	if (sinceLastPieceMove > moveTime)
+	if (sinceLastBoardTick > moveTime * 1000000)
 	{
 		if (this->canMove(0, 1) == false)
 		{
@@ -83,15 +84,13 @@ void Board::tick(const sf::Time &delta)
 		{
 			currentPieceY++;
 		}
-		sinceLastPieceMove -= moveTime;
+		sinceLastBoardTick -= moveTime * 1000000;
 	}
 	updateBoard();
 }
 
 void Board::handleKeyPress(Keyboard::Key key)
 {
-	vector<Pair> piecePartsLocations = getPieceParts();
-
 	switch (key)
 	{
 		case Keyboard::Left:
@@ -110,10 +109,17 @@ void Board::handleKeyPress(Keyboard::Key key)
 			if (this->canMove(0, 1))
 			{
 				currentPieceY++;
-			} else {
+			} else
+			{
 				turnPieceIntoFill();
 			}
 			break;
+		case Keyboard::Up:
+		case Keyboard::Space:
+			if (this->canRotate())
+			{
+				this->rotate();
+			}
 	}
 }
 
@@ -130,17 +136,13 @@ void Board::updateBoard()
 		}
 	}
 
-	const std::vector<bool> shape = pieces[currentPiece];
+	const std::vector<Pair> currentPieceShape = pieces[currentPiece];
+	for (int i = 0; i < currentPieceShape.size(); i++)
+	{
+		int xPos = currentPieceX - 2 + currentPieceShape[i].x;
+		int yPos = currentPieceY + currentPieceShape[i].y;
 
-	for (int i = 0; i < 8; i++)
-	{ //first line
-		if (shape[i])
-		{
-			int xPos = i % 4 + currentPieceX;
-			int yPos = i / 4 + currentPieceY;
-
-			cells[xPos][yPos] = PiecePart;
-		}
+		cells[xPos][yPos] = PiecePart;
 	}
 }
 
@@ -168,7 +170,7 @@ bool Board::canMove(int relativeX, int relativeY)
 	for (int i = 0; i < piecePartsLocations.size(); ++i)
 	{
 		//x
-		if (piecePartsLocations[i].x + relativeX > this->x)
+		if (piecePartsLocations[i].x + relativeX >= this->x)
 		{
 			canMove = false;
 		} else if (piecePartsLocations[i].x + relativeX < 0)
@@ -202,41 +204,39 @@ void Board::turnPieceIntoFill()
 	}
 }
 
+bool Board::canRotate()
+{
+	return true;
+}
 
-std::map<PieceType, std::vector<bool>> pieces = {
+void Board::rotate()
+{
+	this->rotation++;
+	this->rotation %= 4;
+}
+
+
+std::map<PieceType, std::vector<Pair>> pieces = {
 		{
-				PieceType::I, {1, 1, 1, 1,
-							   0, 0, 0, 0}
+				PieceType::I, {Pair(0, 0), Pair(1, 0), Pair(2, 0), Pair(3, 0)}
 		},
 		{
-				PieceType::J, {
-				               1, 0, 0, 0,
-						              1, 1, 1, 0
-				              }
+				PieceType::J, {Pair(0, 0), Pair(0, 1), Pair(1, 1), Pair(2, 1)}
 		},
 		{
-				PieceType::L, {0, 0, 0, 1,
-						              0, 1, 1, 1}
+				PieceType::L, {Pair(3, 0), Pair(1, 1), Pair(2, 1), Pair(3, 1)}
 		},
 		{
-				PieceType::O, {
-				               0, 1, 1, 0,
-						              0, 1, 1, 0}
+				PieceType::O, {Pair(1, 0), Pair(2, 0), Pair(1, 1), Pair(2, 1)}
 		},
 		{
-				PieceType::S, {
-				               0, 1, 1, 0,
-						              1, 1, 0, 0}
+				PieceType::S, {Pair(1, 0), Pair(2, 0), Pair(0, 1), Pair(1, 1)}
 		},
 		{
-				PieceType::T, {
-				               0, 1, 0, 0,
-						              1, 1, 1, 0}
+				PieceType::T, {Pair(1, 0), Pair(0, 1), Pair(1, 1), Pair(2, 1)}
 		},
 		{
-				PieceType::Z, {
-				               1, 1, 0, 0,
-						              0, 1, 1, 0}
+				PieceType::Z, {Pair(0, 0), Pair(1, 0), Pair(1, 1), Pair(2, 1)}
 		},
 };
 
