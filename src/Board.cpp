@@ -78,12 +78,7 @@ void Board::tick(const sf::Time &delta)
 	{
 		if (this->canMove(0, 1) == false)
 		{
-			vector<Pair> pieceParts = getPieceParts();
-			for (int i = 0; i < pieceParts.size(); ++i)
-			{
-				cells[pieceParts[i].x][pieceParts[i].y] = Filled;
-				createNewPiece();
-			}
+			turnPieceIntoFill();
 		} else
 		{
 			currentPieceY++;
@@ -115,6 +110,8 @@ void Board::handleKeyPress(Keyboard::Key key)
 			if (this->canMove(0, 1))
 			{
 				currentPieceY++;
+			} else {
+				turnPieceIntoFill();
 			}
 			break;
 	}
@@ -195,10 +192,21 @@ bool Board::canMove(int relativeX, int relativeY)
 	return canMove;
 }
 
+void Board::turnPieceIntoFill()
+{
+	vector<Pair> pieceParts = getPieceParts();
+	for (int i = 0; i < pieceParts.size(); ++i)
+	{
+		cells[pieceParts[i].x][pieceParts[i].y] = Filled;
+		createNewPiece();
+	}
+}
+
 
 std::map<PieceType, std::vector<bool>> pieces = {
 		{
-				PieceType::I, {1, 1, 1, 1, 0, 0, 0, 0}
+				PieceType::I, {1, 1, 1, 1,
+							   0, 0, 0, 0}
 		},
 		{
 				PieceType::J, {

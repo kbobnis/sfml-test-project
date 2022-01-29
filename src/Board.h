@@ -56,6 +56,8 @@ public:
 	vector<Pair> getPieceParts();
 
 	bool canMove(int relativeX, int relativeY);
+
+	void turnPieceIntoFill();
 };
 
 std::map<PieceType, std::vector<bool>> extern pieces;
