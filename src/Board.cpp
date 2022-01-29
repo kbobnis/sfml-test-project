@@ -139,21 +139,24 @@ void Board::updateBoard()
 	const std::vector<Pair> shape = pieces[currentPiece];
 	for (int i = 0; i < shape.size(); i++)
 	{
-		//(x, y) rotated 90 degrees around (0, 0) is (-y, x).
-		//If you want to rotate clockwise, you simply do it the other way around, getting (y, -x).
 		int rotatedX = shape[i].x;
 		int rotatedY = shape[i].y;
 
 		///rotate 90' point
-		//		x' = -(y - py) + px
-		//		y' = (x - px) + py
-		Pair rotationPoint(1, 0); //rotation point
+		//x' = -(y - py) + px
+		//y' = (x - px) + py
+		Pair rotationPoint(1, 0);
 
 		for (int j = 0; j < rotation; ++j)
 		{
 			int tmp = rotatedX;
 			rotatedX = - (rotatedY - rotationPoint.y) + rotationPoint.x;
 			rotatedY = (tmp - rotationPoint.x) + rotationPoint.y;
+
+			//rotate rotation point
+			int tmpRP = rotationPoint.x;
+			rotationPoint.x = - rotationPoint.y;
+			rotationPoint.y = tmpRP;
 		}
 
 		int xPos = currentPieceX - 2 + rotatedX;
