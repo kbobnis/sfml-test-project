@@ -136,11 +136,28 @@ void Board::updateBoard()
 		}
 	}
 
-	const std::vector<Pair> currentPieceShape = pieces[currentPiece];
-	for (int i = 0; i < currentPieceShape.size(); i++)
+	const std::vector<Pair> shape = pieces[currentPiece];
+	for (int i = 0; i < shape.size(); i++)
 	{
-		int xPos = currentPieceX - 2 + currentPieceShape[i].x;
-		int yPos = currentPieceY + currentPieceShape[i].y;
+		//(x, y) rotated 90 degrees around (0, 0) is (-y, x).
+		//If you want to rotate clockwise, you simply do it the other way around, getting (y, -x).
+		int rotatedX = shape[i].x;
+		int rotatedY = shape[i].y;
+
+		///rotate 90' point
+		//		x' = -(y - py) + px
+		//		y' = (x - px) + py
+		Pair rotationPoint(1, 0); //rotation point
+
+		for (int j = 0; j < rotation; ++j)
+		{
+			int tmp = rotatedX;
+			rotatedX = - (rotatedY - rotationPoint.y) + rotationPoint.x;
+			rotatedY = (tmp - rotationPoint.x) + rotationPoint.y;
+		}
+
+		int xPos = currentPieceX - 2 + rotatedX;
+		int yPos = currentPieceY + rotatedY;
 
 		cells[xPos][yPos] = PiecePart;
 	}
