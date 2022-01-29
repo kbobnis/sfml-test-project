@@ -3,7 +3,7 @@ project(HelloSFML)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(HelloSFML src/main.cpp src/Board.cpp src/Board.h)
+add_executable(HelloSFML src/main.cpp src/Board.cpp src/Board.h src/Pair.h src/Pair.cpp)
 
 set(SFML_STATIC_LIBRARIES TRUE)
 set(SFML_DIR C:/envs/cpp/SFML-2.5.1/lib/cmake/SFML)

@@ -4,7 +4,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "PieceType.h"
 #include "Pair.h"
 
 using namespace sf;
@@ -19,6 +18,8 @@ enum PieceType
 {
 	I, J, L, O, S, T, Z
 };
+
+std::map<PieceType, std::vector<Pair>> extern pieces;
 
 class Board
 {
@@ -45,7 +46,7 @@ public:
 
 	void handleKeyPress(Keyboard::Key key);
 
-	void updateBoard();
+	void updateCells();
 
 	vector<Pair> getPieceParts();
 

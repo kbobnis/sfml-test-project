@@ -5,7 +5,6 @@
 #include <SFML/Graphics.hpp>
 #include "Board.h"
 #include "Pair.h"
-#include "PieceType.h"
 #include <iostream>
 
 using namespace sf;
@@ -88,7 +87,7 @@ void Board::tick(const sf::Time &delta)
 		}
 		sinceLastBoardTick -= moveTime * 1000000;
 	}
-	updateBoard();
+	updateCells();
 }
 
 void Board::handleKeyPress(Keyboard::Key key)
@@ -125,7 +124,7 @@ void Board::handleKeyPress(Keyboard::Key key)
 	}
 }
 
-void Board::updateBoard()
+void Board::updateCells()
 {
 	for (int x = 0; x < cells.size(); x++)
 	{
@@ -156,9 +155,9 @@ void Board::updateBoard()
 			rotatedY = (tmp - rotationPoint.x) + rotationPoint.y;
 
 			//rotate rotation point
-			int tmpRP = rotationPoint.x;
-			rotationPoint.x = - rotationPoint.y;
-			rotationPoint.y = tmpRP;
+			//int tmpRP = rotationPoint.x;
+			//rotationPoint.x = - rotationPoint.y;
+			//rotationPoint.y = tmpRP;
 		}
 
 		int xPos = currentPieceX - 2 + rotatedX;
@@ -235,5 +234,30 @@ void Board::rotate()
 	this->rotation++;
 	this->rotation %= 4;
 }
+
+
+std::map<PieceType, std::vector<Pair>> pieces = {
+		{
+				I, {Pair(0, 0), Pair(1, 0), Pair(2, 0), Pair(3, 0)}
+		},
+		{
+				J, {Pair(0, 0), Pair(0, 1), Pair(1, 1), Pair(2, 1)}
+		},
+		{
+				L, {Pair(3, 0), Pair(1, 1), Pair(2, 1), Pair(3, 1)}
+		},
+		{
+				O, {Pair(1, 0), Pair(2, 0), Pair(1, 1), Pair(2, 1)}
+		},
+		{
+				S, {Pair(1, 0), Pair(2, 0), Pair(0, 1), Pair(1, 1)}
+		},
+		{
+				T, {Pair(1, 0), Pair(0, 1), Pair(1, 1), Pair(2, 1)}
+		},
+		{
+				Z, {Pair(0, 0), Pair(1, 0), Pair(1, 1), Pair(2, 1)}
+		},
+};
 
 
