@@ -4,27 +4,20 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include "PieceType.h"
+#include "Pair.h"
 
 using namespace sf;
 using namespace std;
-
-enum PieceType
-{
-	I, J, L, O, S, T, Z
-};
 
 enum FillType
 {
 	Empty, Filled, PiecePart
 };
 
-struct Pair
+enum PieceType
 {
-public:
-	Pair(int x, int y);
-
-	int x;
-	int y;
+	I, J, L, O, S, T, Z
 };
 
 class Board
@@ -66,4 +59,3 @@ public:
 
 };
 
-std::map<PieceType, std::vector<Pair>> extern pieces;

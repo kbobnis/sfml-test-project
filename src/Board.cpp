@@ -4,6 +4,8 @@
 
 #include <SFML/Graphics.hpp>
 #include "Board.h"
+#include "Pair.h"
+#include "PieceType.h"
 #include <iostream>
 
 using namespace sf;
@@ -189,7 +191,6 @@ bool Board::canMove(int relativeX, int relativeY)
 	//find all piece parts and check if there is no end of screen or brigh on the left of it
 	for (int i = 0; i < piecePartsLocations.size(); ++i)
 	{
-		//x
 		if (piecePartsLocations[i].x + relativeX >= this->x)
 		{
 			canMove = false;
@@ -236,32 +237,3 @@ void Board::rotate()
 }
 
 
-std::map<PieceType, std::vector<Pair>> pieces = {
-		{
-				PieceType::I, {Pair(0, 0), Pair(1, 0), Pair(2, 0), Pair(3, 0)}
-		},
-		{
-				PieceType::J, {Pair(0, 0), Pair(0, 1), Pair(1, 1), Pair(2, 1)}
-		},
-		{
-				PieceType::L, {Pair(3, 0), Pair(1, 1), Pair(2, 1), Pair(3, 1)}
-		},
-		{
-				PieceType::O, {Pair(1, 0), Pair(2, 0), Pair(1, 1), Pair(2, 1)}
-		},
-		{
-				PieceType::S, {Pair(1, 0), Pair(2, 0), Pair(0, 1), Pair(1, 1)}
-		},
-		{
-				PieceType::T, {Pair(1, 0), Pair(0, 1), Pair(1, 1), Pair(2, 1)}
-		},
-		{
-				PieceType::Z, {Pair(0, 0), Pair(1, 0), Pair(1, 1), Pair(2, 1)}
-		},
-};
-
-Pair::Pair(int x, int y)
-{
-	this->x = x;
-	this->y = y;
-}
