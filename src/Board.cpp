@@ -277,11 +277,17 @@ void Board::clearRow(int &rowIndex)
 
 void Board::moveRowsDownUntil(int &rowIndex)
 {
-	for (int y = rowIndex; y >= 0; y--)
+	for (int y = rowIndex; y > 0; y--)
 	{
-		for(int x=0; x < cells.size(); x++)
+		for (int x = 0; x < cells.size(); x++)
 		{
-			cells[x][y] = cells[x][y-1];
+			FillType fillType = cells[x][y - 1];
+			if (fillType == PiecePart)
+			{
+				fillType = Empty;
+			}
+
+			cells[x][y] = fillType;
 		}
 	}
 }
