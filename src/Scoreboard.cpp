@@ -6,6 +6,7 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 
+
 Scoreboard::Scoreboard(sf::Font& font)
 {
 	sf::Text text;
@@ -25,8 +26,11 @@ void Scoreboard::reactToEvent(EventType type, int data)
 	{
 		case RowsCleared:
 			this->lines += data;
-			std::string text = "Lines: " + std::to_string(lines);
-			this->text.setString(text);
+			this->text.setString("Lines: " + std::to_string(lines));
+			break;
+		case Lost:
+			this->text.setFillColor(sf::Color::Red);
+			this->text.setString("Game lost. Score: " + std::to_string(lines));
 			break;
 	}
 }

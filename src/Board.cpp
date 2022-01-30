@@ -22,8 +22,6 @@ Board::Board(const int columns, const int y, const int cellWidth, int cellHeight
 	this->cellWidth = cellWidth;
 	this->cellHeight = cellHeight;
 
-	this->createNewPiece();
-
 	cells.resize(columns);
 	for (int i = 0; i < columns; ++i)
 	{
@@ -38,6 +36,8 @@ Board::Board(const int columns, const int y, const int cellWidth, int cellHeight
 		}
 	}
 
+	this->createNewPiece();
+
 	cell.setOutlineColor(Color::Green);
 	cell.setOutlineThickness(cellWidth / 20);
 }
@@ -47,6 +47,20 @@ void Board::createNewPiece()
 	currentPiece = pieces[rand() % pieces.size()];
 	currentPiecePos.x = columns / 2 - currentPiece.GetLength() / 2;
 	currentPiecePos.y = 0;
+
+	std::vector<Pair> shapeAfterRotation = currentPiece.GetShapeAfterRotation(this->rotation);
+	for (int i = 0; i < shapeAfterRotation.size(); i++)
+	{
+		int xPos = this->currentPiecePos.x + shapeAfterRotation[i].x;
+		int yPos = this->currentPiecePos.y + shapeAfterRotation[i].y;
+
+		if (xPos > 0 && yPos > 0 && cells[xPos][yPos] == Filled)
+		{
+			this->lost = true;
+			this->notify(EventType::Lost, 0);
+		}
+	}
+
 }
 
 void Board::draw(RenderTarget *window)
@@ -211,8 +225,8 @@ void Board::turnPieceIntoFill()
 	for (int i = 0; i < pieceParts.size(); ++i)
 	{
 		cells[pieceParts[i].x][pieceParts[i].y] = Filled;
-		createNewPiece();
 	}
+	createNewPiece();
 }
 
 bool Board::canRotate()
@@ -327,6 +341,11 @@ void Board::markLinesToClear()
 bool Board::markedLinesReadyToClear()
 {
 	return this->rowsToClearDelta > moveTime * 1000000;
+}
+
+bool Board::stillPlaying()
+{
+	return this->lost == false;
 }
 
 std::vector<Piece> pieces = {

@@ -27,6 +27,7 @@ private:
 	int cellWidth, cellHeight;
 	vector<vector<FillType>> cells;
 	RectangleShape cell;
+	bool lost = false;
 
 	long rowsToClearDelta = 0;
 
@@ -71,5 +72,7 @@ public:
 	void markLinesToClear();
 
 	bool markedLinesReadyToClear();
+
+	bool stillPlaying();
 };
 

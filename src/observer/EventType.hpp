@@ -8,7 +8,7 @@
 
 enum EventType
 {
-	RowsCleared
+	RowsCleared, Lost
 };
 
 

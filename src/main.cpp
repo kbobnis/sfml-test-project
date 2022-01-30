@@ -48,15 +48,19 @@ int main()
 			}
 		}
 
-		board.tick(clock.restart());
-		if (board.anyLinesToClear())
+		if (board.stillPlaying())
 		{
-			board.markLinesToClear();
-		}
+			board.tick(clock.restart());
 
-		if (board.markedLinesReadyToClear())
-		{
-			board.clearLines();
+			if (board.anyLinesToClear())
+			{
+				board.markLinesToClear();
+			}
+
+			if (board.markedLinesReadyToClear())
+			{
+				board.clearLines();
+			}
 		}
 
 		window.clear();
