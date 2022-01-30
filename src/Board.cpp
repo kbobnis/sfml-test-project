@@ -212,11 +212,11 @@ bool Board::canRotate()
 		return false;
 	}
 
-	std::vector<Pair> pos = this->GetShapeAfterRotation(currentPiece, this->rotation + 1);
-	for (int i = 0; i < pos.size(); i++)
+	std::vector<Pair> afterRotation = currentPiece.GetShapeAfterRotation(this->rotation + 1);
+	for (int i = 0; i < afterRotation.size(); i++)
 	{
-		int x = pos[i].x + currentPiecePos.x;
-		int y = pos[i].y + currentPiecePos.y;
+		int x = afterRotation[i].x + currentPiecePos.x;
+		int y = afterRotation[i].y + currentPiecePos.y;
 
 		if (x < 0 || y < 0 || x >= cells.size() || y >= cells[0].size() || cells[x][y] == Filled)
 		{
@@ -279,7 +279,7 @@ void Board::clearLines()
 std::vector<Piece> pieces = {
 		Piece(I, {Pair(0, 0), Pair(1, 0), Pair(2, 0), Pair(3, 0)}, Pair(2, 0), 2),
 		Piece(J, {Pair(0, 0), Pair(0, 1), Pair(1, 1), Pair(2, 1)}, Pair(1, 1), 4),
-		Piece(L, {Pair(3, 0), Pair(1, 1), Pair(2, 1), Pair(3, 1)}, Pair(1, 1), 4),
+		Piece(L, {Pair(2, 0), Pair(0, 1), Pair(1, 1), Pair(2, 1)}, Pair(1, 1), 4),
 		Piece(O, {Pair(1, 0), Pair(2, 0), Pair(1, 1), Pair(2, 1)}, Pair(0, 0), 1),
 		Piece(S, {Pair(1, 0), Pair(2, 0), Pair(0, 1), Pair(1, 1)}, Pair(1, 1), 2),
 		Piece(T, {Pair(1, 0), Pair(0, 1), Pair(1, 1), Pair(2, 1)}, Pair(1, 1), 4),
