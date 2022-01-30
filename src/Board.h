@@ -57,5 +57,9 @@ public:
 	void rotate();
 
 	void clearLines();
+
+	void clearRow(int& rowIndex);
+
+	void moveRowsDownUntil(int& rowIndex);
 };
 

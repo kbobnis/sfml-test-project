@@ -237,48 +237,51 @@ void Board::clearLines()
 {
 	vector<Pair> pieceParts = getPieceParts();
 
-	int rowsToClearCount = this->rows;
-	vector<bool> rowsToClear;
+	vector<int> rowsToClear;
 	for (int y = 0; y < this->rows; y++)
 	{
-		rowsToClear.push_back(true);
+		bool allFilled = true;
 		for (int x = 0; x < this->columns; x++)
 		{
 			if (cells[x][y] == Empty || cells[x][y] == PiecePart)
 			{
-				rowsToClear[y] = false;
-				rowsToClearCount--;
+				allFilled = false;
 				break;
 			}
 		}
-	}
-
-	for (int y = 0; y < this->rows; y++)
-	{
-		if (rowsToClear[y])
+		if (allFilled)
 		{
-			for (int x = 0; x < cells.size(); x++)
-			{
-				cells[x][y] = Empty;
-			}
+			rowsToClear.push_back(y);
 		}
 	}
-	if (rowsToClearCount)
+
+	for (int i = 0; i < rowsToClear.size(); i++)
 	{
-		this->notify(EventType::RowsCleared, rowsToClearCount);
+		clearRow(rowsToClear[i]);
+		moveRowsDownUntil(rowsToClear[i]);
 	}
 
-	for (int y = this->rows - 1; y >= 0; y--)
+	if (rowsToClear.size() > 0)
 	{
-		if (rowsToClear[y])
+		this->notify(EventType::RowsCleared, rowsToClear.size());
+	}
+}
+
+void Board::clearRow(int &rowIndex)
+{
+	for (int x = 0; x < cells.size(); x++)
+	{
+		cells[x][rowIndex] = Empty;
+	}
+}
+
+void Board::moveRowsDownUntil(int &rowIndex)
+{
+	for (int y = rowIndex; y >= 0; y--)
+	{
+		for(int x=0; x < cells.size(); x++)
 		{
-			for (int y2 = y; y2 > 0; y2--)
-			{
-				for (int x = 0; x < this->columns; x++)
-				{
-					cells[x][y2] = cells[x][y2 - 1];
-				}
-			}
+			cells[x][y] = cells[x][y-1];
 		}
 	}
 }
