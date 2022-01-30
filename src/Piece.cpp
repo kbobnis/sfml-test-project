@@ -2,7 +2,7 @@
 // Created by Krzysiek on 30/01/2022.
 //
 
-#include "Piece.h"
+#include "Piece.hpp"
 
 Piece::Piece(PieceType type, std::vector<Pair> cellPositions, Pair rotationPoint, int howManyRotations) :
 type(type),

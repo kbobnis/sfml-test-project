@@ -2,8 +2,8 @@
 // Created by Krzysiek on 29/01/2022.
 //
 
-#ifndef HELLOSFML_PAIR_H
-#define HELLOSFML_PAIR_H
+#ifndef HELLOSFML_PAIR_HPP
+#define HELLOSFML_PAIR_HPP
 
 struct Pair
 {
@@ -14,4 +14,4 @@ public:
 	int y;
 };
 
-#endif //HELLOSFML_PAIR_H
+#endif //HELLOSFML_PAIR_HPP

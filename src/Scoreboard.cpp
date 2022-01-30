@@ -2,7 +2,7 @@
 // Created by Krzysiek on 30/01/2022.
 //
 
-#include "Scoreboard.h"
+#include "Scoreboard.hpp"
 #include <string>
 #include <SFML/Graphics.hpp>
 

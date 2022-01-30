@@ -2,8 +2,8 @@
 // Created by Krzysiek on 30/01/2022.
 //
 
-#ifndef HELLOSFML_SCOREBOARD_H
-#define HELLOSFML_SCOREBOARD_H
+#ifndef HELLOSFML_SCOREBOARD_HPP
+#define HELLOSFML_SCOREBOARD_HPP
 
 #include <SFML/Graphics.hpp>
 #include "observer/Observer.hpp"
@@ -23,4 +23,4 @@ public:
 };
 
 
-#endif //HELLOSFML_SCOREBOARD_H
+#endif //HELLOSFML_SCOREBOARD_HPP

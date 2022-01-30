@@ -4,8 +4,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "Pair.h"
-#include "Piece.h"
+#include "Pair.hpp"
+#include "Piece.hpp"
 #include <stdio.h>
 #include "observer/Subject.hpp"
 

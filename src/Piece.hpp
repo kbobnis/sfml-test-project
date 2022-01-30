@@ -2,11 +2,11 @@
 // Created by Krzysiek on 30/01/2022.
 //
 
-#ifndef HELLOSFML_PIECE_H
-#define HELLOSFML_PIECE_H
+#ifndef HELLOSFML_PIECE_HPP
+#define HELLOSFML_PIECE_HPP
 
 #include <vector>
-#include "Pair.h"
+#include "Pair.hpp"
 
 enum PieceType
 {
@@ -30,4 +30,4 @@ public:
 	int GetLength();
 };
 
-#endif //HELLOSFML_PIECE_H
+#endif //HELLOSFML_PIECE_HPP

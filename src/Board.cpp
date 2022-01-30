@@ -3,8 +3,8 @@
 //
 
 #include <SFML/Graphics.hpp>
-#include "Board.h"
-#include "Pair.h"
+#include "Board.hpp"
+#include "Pair.hpp"
 #include <iostream>
 #include "observer/EventType.hpp"
 
