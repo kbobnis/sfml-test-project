@@ -14,7 +14,7 @@ using namespace std;
 
 enum FillType
 {
-	Empty, Filled, PiecePart
+	Empty, Filled, PiecePart, MarkedToClear
 };
 
 std::vector<Piece> extern pieces;
@@ -28,6 +28,8 @@ private:
 	vector<vector<FillType>> cells;
 	RectangleShape cell;
 
+	long rowsToClearDelta = 0;
+
 	long sinceLastBoardTick = 0;
 	Piece currentPiece;
 	Pair currentPiecePos;
@@ -40,7 +42,7 @@ public:
 
 	void draw(RenderTarget *window);
 
-	void movePieceDown(const sf::Time& delta);
+	void tick(const sf::Time& delta);
 
 	void handleKeyPress(Keyboard::Key key);
 
@@ -61,5 +63,13 @@ public:
 	void clearRow(int& rowIndex);
 
 	void moveRowsDownUntil(int& rowIndex);
+
+	bool anyLinesToClear();
+
+	vector<int> getRowsToClear();
+
+	void markLinesToClear();
+
+	bool markedLinesReadyToClear();
 };
 

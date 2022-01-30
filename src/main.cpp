@@ -48,8 +48,16 @@ int main()
 			}
 		}
 
-		board.movePieceDown(clock.restart());
-		board.clearLines();
+		board.tick(clock.restart());
+		if (board.anyLinesToClear())
+		{
+			board.markLinesToClear();
+		}
+
+		if (board.markedLinesReadyToClear())
+		{
+			board.clearLines();
+		}
 
 		window.clear();
 		board.draw(&window);

@@ -66,6 +66,9 @@ void Board::draw(RenderTarget *window)
 				case PiecePart:
 					cell.setFillColor(Color::Green);
 					break;
+				case MarkedToClear:
+					cell.setFillColor(Color::Yellow);
+					break;
 			}
 
 			cell.setPosition(Vector2f(x * cellWidth, y * cellHeight));
@@ -75,9 +78,15 @@ void Board::draw(RenderTarget *window)
 
 }
 
-void Board::movePieceDown(const sf::Time &delta)
+void Board::tick(const sf::Time &delta)
 {
-	sinceLastBoardTick += delta.asMicroseconds();
+	Int64 microseconds = delta.asMicroseconds();
+	sinceLastBoardTick += microseconds;
+
+	if (rowsToClearDelta > 0)
+	{
+		rowsToClearDelta += microseconds;
+	}
 
 	if (sinceLastBoardTick > moveTime * 1000000)
 	{
@@ -235,26 +244,9 @@ void Board::rotate()
 
 void Board::clearLines()
 {
-	vector<Pair> pieceParts = getPieceParts();
+	this->rowsToClearDelta = 0;
 
-	vector<int> rowsToClear;
-	for (int y = 0; y < this->rows; y++)
-	{
-		bool allFilled = true;
-		for (int x = 0; x < this->columns; x++)
-		{
-			if (cells[x][y] == Empty || cells[x][y] == PiecePart)
-			{
-				allFilled = false;
-				break;
-			}
-		}
-		if (allFilled)
-		{
-			rowsToClear.push_back(y);
-		}
-	}
-
+	vector<int> rowsToClear = getRowsToClear();
 	for (int i = 0; i < rowsToClear.size(); i++)
 	{
 		clearRow(rowsToClear[i]);
@@ -282,7 +274,7 @@ void Board::moveRowsDownUntil(int &rowIndex)
 		for (int x = 0; x < cells.size(); x++)
 		{
 			FillType fillType = cells[x][y - 1];
-			if (fillType == PiecePart)
+			if (fillType == PiecePart || fillType == MarkedToClear)
 			{
 				fillType = Empty;
 			}
@@ -290,6 +282,51 @@ void Board::moveRowsDownUntil(int &rowIndex)
 			cells[x][y] = fillType;
 		}
 	}
+}
+
+bool Board::anyLinesToClear()
+{
+	return rowsToClearDelta == 0 && getRowsToClear().size() > 0;
+}
+
+vector<int> Board::getRowsToClear()
+{
+	vector<int> rowsToClear;
+	for (int y = 0; y < this->rows; y++)
+	{
+		bool allFilled = true;
+		for (int x = 0; x < this->columns; x++)
+		{
+			if (cells[x][y] == Empty || cells[x][y] == PiecePart)
+			{
+				allFilled = false;
+				break;
+			}
+		}
+		if (allFilled)
+		{
+			rowsToClear.push_back(y);
+		}
+	}
+	return rowsToClear;
+}
+
+void Board::markLinesToClear()
+{
+	vector<int> rowsToClear = getRowsToClear();
+	for (int y: rowsToClear)
+	{
+		rowsToClearDelta = 1;
+		for (int x = 0; x < this->columns; x++)
+		{
+			cells[x][y] = MarkedToClear;
+		}
+	}
+}
+
+bool Board::markedLinesReadyToClear()
+{
+	return this->rowsToClearDelta > moveTime * 1000000;
 }
 
 std::vector<Piece> pieces = {
