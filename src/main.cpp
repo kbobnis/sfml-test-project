@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include "Board.hpp"
 #include "Scoreboard.hpp"
+#include <SFML/Audio.hpp>
 
 using namespace sf;
 

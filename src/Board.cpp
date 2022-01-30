@@ -110,6 +110,7 @@ void Board::tick(const sf::Time &delta)
 		} else
 		{
 			currentPiecePos.y++;
+
 		}
 		sinceLastBoardTick -= moveTime * 1000000;
 	}
