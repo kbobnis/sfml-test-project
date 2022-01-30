@@ -44,7 +44,7 @@ Board::Board(const int columns, const int y, const int cellWidth, int cellHeight
 void Board::createNewPiece()
 {
 	currentPiece = pieces[rand() % pieces.size()];
-	currentPiecePos.x = columns / 2;
+	currentPiecePos.x = columns / 2 - currentPiece.GetLength() / 2;
 	currentPiecePos.y = 0;
 }
 
@@ -139,10 +139,10 @@ void Board::updateCells()
 		}
 	}
 
-	std::vector<Pair> shapeAfterRotation = getShapePositionsAfterRotation(currentPiece, this->rotation);
+	std::vector<Pair> shapeAfterRotation = currentPiece.GetShapeAfterRotation(this->rotation);
 	for (int i = 0; i < shapeAfterRotation.size(); i++)
 	{
-		int xPos = this->currentPiecePos.x - 2 + shapeAfterRotation[i].x;
+		int xPos = this->currentPiecePos.x + shapeAfterRotation[i].x;
 		int yPos = this->currentPiecePos.y + shapeAfterRotation[i].y;
 		cells[xPos][yPos] = PiecePart;
 	}
@@ -207,6 +207,22 @@ void Board::turnPieceIntoFill()
 
 bool Board::canRotate()
 {
+	if (currentPiece.howManyRotations == 1)
+	{
+		return false;
+	}
+
+	std::vector<Pair> pos = this->GetShapeAfterRotation(currentPiece, this->rotation + 1);
+	for (int i = 0; i < pos.size(); i++)
+	{
+		int x = pos[i].x + currentPiecePos.x;
+		int y = pos[i].y + currentPiecePos.y;
+
+		if (x < 0 || y < 0 || x >= cells.size() || y >= cells[0].size() || cells[x][y] == Filled)
+		{
+			return false;
+		}
+	}
 	return true;
 }
 
@@ -258,30 +274,6 @@ void Board::clearLines()
 			}
 		}
 	}
-}
-
-std::vector<Pair> Board::getShapePositionsAfterRotation(Piece &piece, int rotation)
-{
-	std::vector<Pair> afterRotation;
-	for (int i = 0; i < piece.cellPositions.size(); i++)
-	{
-		int rotatedX = piece.cellPositions[i].x;
-		int rotatedY = piece.cellPositions[i].y;
-
-		///rotate 90'
-		//columns' = -(rows - py) + px
-		//rows' = (columns - px) + py
-
-		for (int j = 0; j < rotation; ++j)
-		{
-			int tmp = rotatedX;
-			rotatedX = -(rotatedY - piece.rotationPoint.y) + piece.rotationPoint.x;
-			rotatedY = (tmp - piece.rotationPoint.x) + piece.rotationPoint.y;
-		}
-
-		afterRotation.push_back(Pair(rotatedX, rotatedY));
-	}
-	return afterRotation;
 }
 
 std::vector<Piece> pieces = {

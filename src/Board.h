@@ -56,6 +56,6 @@ public:
 
 	void clearLines();
 
-	static std::vector<Pair> getShapePositionsAfterRotation(Piece& piece, int rotation);
+	static std::vector<Pair> GetShapeAfterRotation(Piece& piece, int rotation);
 };
 

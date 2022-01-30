@@ -5,7 +5,8 @@
 #ifndef HELLOSFML_PIECE_H
 #define HELLOSFML_PIECE_H
 
-#include "Board.h";
+#include <vector>
+#include "Pair.h"
 
 enum PieceType
 {
@@ -15,20 +16,18 @@ enum PieceType
 class Piece
 {
 private:
+	int length;
 public:
 	PieceType type;
 	std::vector<Pair> cellPositions;
 	Pair rotationPoint;
 	int howManyRotations;
 
-	Piece(PieceType type, std::vector<Pair> cellPositions, Pair rotationPoint, int howManyRotations) :
-			type(type),
-			cellPositions(cellPositions),
-			rotationPoint(rotationPoint),
-			howManyRotations(howManyRotations)
-	{
+	Piece(PieceType type, std::vector<Pair> cellPositions, Pair rotationPoint, int howManyRotations) ;
 
-	}
+	std::vector<Pair> GetShapeAfterRotation(int rotation) const;
+
+	int GetLength();
 };
 
 #endif //HELLOSFML_PIECE_H
