@@ -12,7 +12,9 @@ using namespace std;
 
 Board::Board(const int columns, const int y, const int cellWidth, int cellHeight, float moveTime) :
 		moveTime(moveTime),
-		cell(Vector2f(cellWidth, cellHeight))
+		cell(Vector2f(cellWidth, cellHeight)),
+		currentPiecePos(columns / 2, 0),
+		currentPiece(pieces[0])
 {
 	this->columns = columns;
 	this->rows = y;
@@ -41,9 +43,9 @@ Board::Board(const int columns, const int y, const int cellWidth, int cellHeight
 
 void Board::createNewPiece()
 {
-	currentPiece = static_cast<PieceType>(rand() % PieceType::Z);
-	currentPieceX = columns / 2;
-	currentPieceY = 0;
+	currentPiece = pieces[rand() % pieces.size()];
+	currentPiecePos.x = columns / 2;
+	currentPiecePos.y = 0;
 }
 
 void Board::draw(RenderTarget *window)
@@ -83,7 +85,7 @@ void Board::movePieceDown(const sf::Time &delta)
 			turnPieceIntoFill();
 		} else
 		{
-			currentPieceY++;
+			currentPiecePos.y++;
 		}
 		sinceLastBoardTick -= moveTime * 1000000;
 	}
@@ -97,19 +99,19 @@ void Board::handleKeyPress(Keyboard::Key key)
 		case Keyboard::Left:
 			if (this->canMove(-1, 0))
 			{
-				currentPieceX--;
+				currentPiecePos.x--;
 			}
 			break;
 		case Keyboard::Right:
 			if (this->canMove(1, 0))
 			{
-				currentPieceX++;
+				currentPiecePos.x++;
 			}
 			break;
 		case Keyboard::Down:
 			if (this->canMove(0, 1))
 			{
-				currentPieceY++;
+				currentPiecePos.y++;
 			} else
 			{
 				turnPieceIntoFill();
@@ -137,32 +139,11 @@ void Board::updateCells()
 		}
 	}
 
-	const std::vector<Pair> shape = pieces[currentPiece];
-	for (int i = 0; i < shape.size(); i++)
+	std::vector<Pair> shapeAfterRotation = getShapePositionsAfterRotation(currentPiece, this->rotation);
+	for (int i = 0; i < shapeAfterRotation.size(); i++)
 	{
-		int rotatedX = shape[i].x;
-		int rotatedY = shape[i].y;
-
-		///rotate 90' point
-		//columns' = -(rows - py) + px
-		//rows' = (columns - px) + py
-		Pair rotationPoint(1, 0);
-
-		for (int j = 0; j < rotation; ++j)
-		{
-			int tmp = rotatedX;
-			rotatedX = -(rotatedY - rotationPoint.y) + rotationPoint.x;
-			rotatedY = (tmp - rotationPoint.x) + rotationPoint.y;
-
-			//rotate rotation point
-			//int tmpRP = rotationPoint.columns;
-			//rotationPoint.columns = - rotationPoint.rows;
-			//rotationPoint.rows = tmpRP;
-		}
-
-		int xPos = currentPieceX - 2 + rotatedX;
-		int yPos = currentPieceY + rotatedY;
-
+		int xPos = this->currentPiecePos.x - 2 + shapeAfterRotation[i].x;
+		int yPos = this->currentPiecePos.y + shapeAfterRotation[i].y;
 		cells[xPos][yPos] = PiecePart;
 	}
 }
@@ -232,7 +213,7 @@ bool Board::canRotate()
 void Board::rotate()
 {
 	this->rotation++;
-	this->rotation %= 4;
+	this->rotation %= currentPiece.howManyRotations;
 }
 
 void Board::clearLines()
@@ -270,37 +251,45 @@ void Board::clearLines()
 		{
 			for (int y2 = y; y2 > 0; y2--)
 			{
-				for(int x=0; x < this->columns; x++){
-					cells[x][y2] = cells[x][y2-1];
+				for (int x = 0; x < this->columns; x++)
+				{
+					cells[x][y2] = cells[x][y2 - 1];
 				}
 			}
 		}
 	}
 }
 
+std::vector<Pair> Board::getShapePositionsAfterRotation(Piece &piece, int rotation)
+{
+	std::vector<Pair> afterRotation;
+	for (int i = 0; i < piece.cellPositions.size(); i++)
+	{
+		int rotatedX = piece.cellPositions[i].x;
+		int rotatedY = piece.cellPositions[i].y;
 
-std::map<PieceType, std::vector<Pair>> pieces = {
+		///rotate 90'
+		//columns' = -(rows - py) + px
+		//rows' = (columns - px) + py
+
+		for (int j = 0; j < rotation; ++j)
 		{
-				I, {Pair(0, 0), Pair(1, 0), Pair(2, 0), Pair(3, 0)}
-		},
-		{
-				J, {Pair(0, 0), Pair(0, 1), Pair(1, 1), Pair(2, 1)}
-		},
-		{
-				L, {Pair(3, 0), Pair(1, 1), Pair(2, 1), Pair(3, 1)}
-		},
-		{
-				O, {Pair(1, 0), Pair(2, 0), Pair(1, 1), Pair(2, 1)}
-		},
-		{
-				S, {Pair(1, 0), Pair(2, 0), Pair(0, 1), Pair(1, 1)}
-		},
-		{
-				T, {Pair(1, 0), Pair(0, 1), Pair(1, 1), Pair(2, 1)}
-		},
-		{
-				Z, {Pair(0, 0), Pair(1, 0), Pair(1, 1), Pair(2, 1)}
-		},
+			int tmp = rotatedX;
+			rotatedX = -(rotatedY - piece.rotationPoint.y) + piece.rotationPoint.x;
+			rotatedY = (tmp - piece.rotationPoint.x) + piece.rotationPoint.y;
+		}
+
+		afterRotation.push_back(Pair(rotatedX, rotatedY));
+	}
+	return afterRotation;
+}
+
+std::vector<Piece> pieces = {
+		Piece(I, {Pair(0, 0), Pair(1, 0), Pair(2, 0), Pair(3, 0)}, Pair(2, 0), 2),
+		Piece(J, {Pair(0, 0), Pair(0, 1), Pair(1, 1), Pair(2, 1)}, Pair(1, 1), 4),
+		Piece(L, {Pair(3, 0), Pair(1, 1), Pair(2, 1), Pair(3, 1)}, Pair(1, 1), 4),
+		Piece(O, {Pair(1, 0), Pair(2, 0), Pair(1, 1), Pair(2, 1)}, Pair(0, 0), 1),
+		Piece(S, {Pair(1, 0), Pair(2, 0), Pair(0, 1), Pair(1, 1)}, Pair(1, 1), 2),
+		Piece(T, {Pair(1, 0), Pair(0, 1), Pair(1, 1), Pair(2, 1)}, Pair(1, 1), 4),
+		Piece(Z, {Pair(0, 0), Pair(1, 0), Pair(1, 1), Pair(2, 1)}, Pair(1, 1), 2)
 };
-
-

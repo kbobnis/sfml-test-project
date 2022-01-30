@@ -5,6 +5,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "Pair.h"
+#include "Piece.h"
 
 using namespace sf;
 using namespace std;
@@ -14,12 +15,7 @@ enum FillType
 	Empty, Filled, PiecePart
 };
 
-enum PieceType
-{
-	I, J, L, O, S, T, Z
-};
-
-std::map<PieceType, std::vector<Pair>> extern pieces;
+std::vector<Piece> extern pieces;
 
 class Board
 {
@@ -30,10 +26,10 @@ private:
 	vector<vector<FillType>> cells;
 	RectangleShape cell;
 
-	long sinceLastBoardTick;
-	PieceType currentPiece;
-	int currentPieceX = 0, currentPieceY = 0;
-	int rotation; //value 0, 1, 2, 3
+	long sinceLastBoardTick = 0;
+	Piece currentPiece;
+	Pair currentPiecePos;
+	int rotation = 0; //value 0, 1, 2, 3
 
 public:
 	Board(const int columns, const int y, const int cellWidth, int cellHeight, float moveTime);
@@ -42,7 +38,7 @@ public:
 
 	void draw(RenderTarget *window);
 
-	void movePieceDown(const sf::Time &delta);
+	void movePieceDown(const sf::Time& delta);
 
 	void handleKeyPress(Keyboard::Key key);
 
@@ -59,5 +55,7 @@ public:
 	void rotate();
 
 	void clearLines();
+
+	static std::vector<Pair> getShapePositionsAfterRotation(Piece& piece, int rotation);
 };
 
