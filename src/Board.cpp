@@ -6,6 +6,7 @@
 #include "Board.h"
 #include "Pair.h"
 #include <iostream>
+#include "observer/EventType.hpp"
 
 using namespace sf;
 using namespace std;
@@ -236,6 +237,7 @@ void Board::clearLines()
 {
 	vector<Pair> pieceParts = getPieceParts();
 
+	int rowsToClearCount = this->rows;
 	vector<bool> rowsToClear;
 	for (int y = 0; y < this->rows; y++)
 	{
@@ -245,6 +247,7 @@ void Board::clearLines()
 			if (cells[x][y] == Empty || cells[x][y] == PiecePart)
 			{
 				rowsToClear[y] = false;
+				rowsToClearCount--;
 				break;
 			}
 		}
@@ -259,6 +262,10 @@ void Board::clearLines()
 				cells[x][y] = Empty;
 			}
 		}
+	}
+	if (rowsToClearCount)
+	{
+		this->notify(EventType::RowsCleared, rowsToClearCount);
 	}
 
 	for (int y = this->rows - 1; y >= 0; y--)

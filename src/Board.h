@@ -6,6 +6,8 @@
 #include <SFML/Graphics.hpp>
 #include "Pair.h"
 #include "Piece.h"
+#include <stdio.h>
+#include "observer/Subject.hpp"
 
 using namespace sf;
 using namespace std;
@@ -17,7 +19,7 @@ enum FillType
 
 std::vector<Piece> extern pieces;
 
-class Board
+class Board : public Subject
 {
 private:
 	const float moveTime;

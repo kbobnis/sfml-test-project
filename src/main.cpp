@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "Board.h"
+#include "Scoreboard.h"
 
 using namespace sf;
 
@@ -16,23 +17,13 @@ int main()
 	const int CellsCountVertical = 20;
 	const int CellsCountHorizontal = 10;
 
-	float cellHeight = height / CellsCountVertical;
-	float cellWidth = width / CellsCountHorizontal;
-
-	Board board(CellsCountHorizontal, CellsCountVertical, cellWidth, cellHeight, 1);
+	Board board(CellsCountHorizontal, CellsCountVertical, width / CellsCountHorizontal, height / CellsCountVertical, 1);
 	Clock clock;
 
-	//Setup score counter
-	sf::Text score;
 	sf::Font font;
-	font.loadFromFile("../Forwa_font.TTF");
-	score.setFont(font);
-	score.setCharacterSize(15);
-	score.setFillColor(sf::Color::Blue);
-	score.setPosition(10,25);
-	sf::Vector2<float> score_scale(1.5f,1.5f);
-	score.setScale(score_scale);
-	score.setString("Lines: 0");
+	font.loadFromFile("../fonts/Forwa_font.TTF");
+	Scoreboard scoreboard(font);
+	board.registerObserver(&scoreboard);
 
 	while (window.isOpen())
 	{
@@ -60,10 +51,9 @@ int main()
 		board.movePieceDown(clock.restart());
 		board.clearLines();
 
-
 		window.clear();
 		board.draw(&window);
-		window.draw(score);
+		window.draw(scoreboard.getScore());
 		window.display();
 	}
 }
