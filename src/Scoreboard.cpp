@@ -7,13 +7,13 @@
 #include <SFML/Graphics.hpp>
 
 
-Scoreboard::Scoreboard(sf::Font& font)
+Scoreboard::Scoreboard(sf::Font& font, int xPos, int width)
 {
 	sf::Text text;
 	text.setFont(font);
 	text.setCharacterSize(15);
-	text.setFillColor(sf::Color::Blue);
-	text.setPosition(10, 25);
+	text.setFillColor(sf::Color::White);
+	text.setPosition(xPos + width / 10, 25);
 	sf::Vector2<float> score_scale(1.5f, 1.5f);
 	text.setScale(score_scale);
 	text.setString("Lines: 0");

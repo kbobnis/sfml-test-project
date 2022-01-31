@@ -11,11 +11,12 @@
 using namespace sf;
 using namespace std;
 
-Board::Board(const int columns, const int y, const int cellWidth, int cellHeight, float moveTime) :
+Board::Board(const int columns, const int y, const int cellWidth, int cellHeight, float& moveTime) :
 		moveTime(moveTime),
 		cell(Vector2f(cellWidth, cellHeight)),
 		currentPiecePos(columns / 2, 0),
-		currentPiece(pieces[0])
+		currentPiece(pieces[0]),
+		nextPiece(pieces[0])
 {
 	this->columns = columns;
 	this->rows = y;
@@ -36,6 +37,7 @@ Board::Board(const int columns, const int y, const int cellWidth, int cellHeight
 		}
 	}
 
+	nextPiece = pieces[rand() % pieces.size()];
 	this->createNewPiece();
 
 	cell.setOutlineColor(Color::Green);
@@ -44,7 +46,12 @@ Board::Board(const int columns, const int y, const int cellWidth, int cellHeight
 
 void Board::createNewPiece()
 {
-	currentPiece = pieces[rand() % pieces.size()];
+	currentPiece = nextPiece;
+	this->rotation = 0;
+
+	int nextPieceIndex = rand() % pieces.size();
+	nextPiece = pieces[nextPieceIndex];
+	this->notify(EventType::NextPieceFiguredOut, nextPieceIndex);
 	currentPiecePos.x = columns / 2 - currentPiece.GetLength() / 2;
 	currentPiecePos.y = 0;
 
@@ -65,6 +72,7 @@ void Board::createNewPiece()
 
 void Board::draw(RenderTarget *window)
 {
+	cell.setOutlineColor(Color::Black);
 	for (int y = 0; y < this->rows; y++)
 	{
 		for (int x = 0; x < this->columns; x++)
@@ -72,13 +80,13 @@ void Board::draw(RenderTarget *window)
 			switch (cells[x][y])
 			{
 				case Empty:
-					cell.setFillColor(Color::Black);
+					cell.setFillColor(Color::White);
 					break;
 				case Filled:
 					cell.setFillColor(Color::Blue);
 					break;
 				case PiecePart:
-					cell.setFillColor(Color::Green);
+					cell.setFillColor(currentPiece.color);
 					break;
 				case MarkedToClear:
 					cell.setFillColor(Color::Yellow);
@@ -92,7 +100,7 @@ void Board::draw(RenderTarget *window)
 
 }
 
-void Board::tick(const sf::Time &delta)
+void Board::tick(const sf::Time& delta)
 {
 	Int64 microseconds = delta.asMicroseconds();
 	sinceLastBoardTick += microseconds;
@@ -274,7 +282,7 @@ void Board::clearLines()
 	}
 }
 
-void Board::clearRow(int &rowIndex)
+void Board::clearRow(int& rowIndex)
 {
 	for (int x = 0; x < cells.size(); x++)
 	{
@@ -282,7 +290,7 @@ void Board::clearRow(int &rowIndex)
 	}
 }
 
-void Board::moveRowsDownUntil(int &rowIndex)
+void Board::moveRowsDownUntil(int& rowIndex)
 {
 	for (int y = rowIndex; y > 0; y--)
 	{
@@ -349,12 +357,17 @@ bool Board::stillPlaying()
 	return this->lost == false;
 }
 
+Piece& Board::getNextPiece()
+{
+	return this->nextPiece;
+}
+
 std::vector<Piece> pieces = {
-		Piece(I, {Pair(0, 0), Pair(1, 0), Pair(2, 0), Pair(3, 0)}, Pair(2, 0), 2),
-		Piece(J, {Pair(0, 0), Pair(0, 1), Pair(1, 1), Pair(2, 1)}, Pair(1, 1), 4),
-		Piece(L, {Pair(2, 0), Pair(0, 1), Pair(1, 1), Pair(2, 1)}, Pair(1, 1), 4),
-		Piece(O, {Pair(1, 0), Pair(2, 0), Pair(1, 1), Pair(2, 1)}, Pair(0, 0), 1),
-		Piece(S, {Pair(1, 0), Pair(2, 0), Pair(0, 1), Pair(1, 1)}, Pair(1, 1), 2),
-		Piece(T, {Pair(1, 0), Pair(0, 1), Pair(1, 1), Pair(2, 1)}, Pair(1, 1), 4),
-		Piece(Z, {Pair(0, 0), Pair(1, 0), Pair(1, 1), Pair(2, 1)}, Pair(1, 1), 2)
+		Piece(I, {Pair(0, 0), Pair(1, 0), Pair(2, 0), Pair(3, 0)}, Pair(2, 0), 2, Color(36, 36, 85)),
+		Piece(J, {Pair(0, 0), Pair(0, 1), Pair(1, 1), Pair(2, 1)}, Pair(1, 1), 4, Color(0, 219, 255)),
+		Piece(L, {Pair(2, 0), Pair(0, 1), Pair(1, 1), Pair(2, 1)}, Pair(1, 1), 4, Color(73, 73, 85)),
+		Piece(O, {Pair(1, 0), Pair(2, 0), Pair(1, 1), Pair(2, 1)}, Pair(0, 0), 1, Color(255, 146, 0)),
+		Piece(S, {Pair(1, 0), Pair(2, 0), Pair(0, 1), Pair(1, 1)}, Pair(1, 1), 2, Color(255, 219, 0)),
+		Piece(T, {Pair(1, 0), Pair(0, 1), Pair(1, 1), Pair(2, 1)}, Pair(1, 1), 4, Color(146, 0, 255)),
+		Piece(Z, {Pair(0, 0), Pair(1, 0), Pair(1, 1), Pair(2, 1)}, Pair(1, 1), 2, Color(219, 0, 0))
 };

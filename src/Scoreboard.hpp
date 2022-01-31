@@ -14,7 +14,7 @@ private:
 	int lines = 0;
 
 public:
-	Scoreboard(sf::Font& font);
+	Scoreboard(sf::Font& font, int xPos, int boardWidth);
 	sf::Text text;
 
 	void reactToEvent(EventType type, int data) override;

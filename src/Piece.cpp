@@ -4,11 +4,12 @@
 
 #include "Piece.hpp"
 
-Piece::Piece(PieceType type, std::vector<Pair> cellPositions, Pair rotationPoint, int howManyRotations) :
-type(type),
-cellPositions(cellPositions),
-rotationPoint(rotationPoint),
-howManyRotations(howManyRotations)
+Piece::Piece(PieceType type, std::vector<Pair> cellPositions, Pair rotationPoint, int howManyRotations, sf::Color color) :
+		color(color),
+		type(type),
+		cellPositions(cellPositions),
+		rotationPoint(rotationPoint),
+		howManyRotations(howManyRotations)
 {
 	int minX = 999;
 	int maxX = -1;

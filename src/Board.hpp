@@ -8,6 +8,7 @@
 #include "Piece.hpp"
 #include <stdio.h>
 #include "observer/Subject.hpp"
+#include "NextPieceBoard.hpp"
 
 using namespace sf;
 using namespace std;
@@ -22,7 +23,7 @@ std::vector<Piece> extern pieces;
 class Board : public Subject
 {
 private:
-	const float moveTime;
+	const float& moveTime;
 	int columns, rows;
 	int cellWidth, cellHeight;
 	vector<vector<FillType>> cells;
@@ -32,12 +33,13 @@ private:
 	long rowsToClearDelta = 0;
 
 	long sinceLastBoardTick = 0;
+	Piece nextPiece;
 	Piece currentPiece;
 	Pair currentPiecePos;
 	int rotation = 0; //value 0, 1, 2, 3
 
 public:
-	Board(const int columns, const int y, const int cellWidth, int cellHeight, float moveTime);
+	Board(const int columns, const int y, const int cellWidth, int cellHeight, float& moveTime);
 
 	void createNewPiece();
 
@@ -74,5 +76,7 @@ public:
 	bool markedLinesReadyToClear();
 
 	bool stillPlaying();
+
+	Piece& getNextPiece();
 };
 

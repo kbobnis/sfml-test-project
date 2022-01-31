@@ -5,6 +5,7 @@
 #ifndef HELLOSFML_PIECE_HPP
 #define HELLOSFML_PIECE_HPP
 
+#include <SFML/Graphics.hpp>
 #include <vector>
 #include "Pair.hpp"
 
@@ -23,11 +24,13 @@ public:
 	Pair rotationPoint;
 	int howManyRotations;
 
-	Piece(PieceType type, std::vector<Pair> cellPositions, Pair rotationPoint, int howManyRotations) ;
+	Piece(PieceType type, std::vector<Pair> cellPositions, Pair rotationPoint, int howManyRotations, sf::Color color) ;
 
 	std::vector<Pair> GetShapeAfterRotation(int rotation) const;
 
 	int GetLength();
+
+	sf::Color color;
 };
 
 #endif //HELLOSFML_PIECE_HPP
