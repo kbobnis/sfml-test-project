@@ -58,8 +58,6 @@ public:
 
 	void turnPieceIntoFill();
 
-	bool canRotate();
-
 	void rotate();
 
 	void clearLines();
@@ -81,5 +79,7 @@ public:
 	Piece& getNextPiece();
 
 	void startNewGame();
+
+	void rotateIfPossible();
 };
 

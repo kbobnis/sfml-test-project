@@ -169,10 +169,7 @@ void Board::handleKeyPress(Keyboard::Key key)
 			{
 				this->startNewGame();
 			}
-			if (this->canRotate())
-			{
-				this->rotate();
-			}
+			this->rotateIfPossible();
 	}
 }
 
@@ -253,33 +250,6 @@ void Board::turnPieceIntoFill()
 		cells[pieceParts[i].x][pieceParts[i].y] = Filled;
 	}
 	createNewPiece();
-}
-
-bool Board::canRotate()
-{
-	if (currentPiece.howManyRotations == 1)
-	{
-		return false;
-	}
-
-	std::vector<Pair> afterRotation = currentPiece.GetShapeAfterRotation(this->rotation + 1);
-	for (int i = 0; i < afterRotation.size(); i++)
-	{
-		int x = afterRotation[i].x + currentPiecePos.x;
-		int y = afterRotation[i].y + currentPiecePos.y;
-
-		if (x < 0 || y < 0 || x >= cells.size() || y >= cells[0].size() || cells[x][y] == Filled)
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
-void Board::rotate()
-{
-	this->rotation++;
-	this->rotation %= currentPiece.howManyRotations;
 }
 
 void Board::clearLines()
@@ -377,6 +347,60 @@ bool Board::stillPlaying()
 Piece& Board::getNextPiece()
 {
 	return this->nextPiece;
+}
+
+void Board::rotateIfPossible()
+{
+	if (currentPiece.howManyRotations == 1)
+	{
+		return;
+	}
+
+	int moveToTheLeft = 0;
+	int moveToTheRight = 0;
+	int moveDown = 0;
+	std::vector<Pair> afterRotation = currentPiece.GetShapeAfterRotation(this->rotation + 1);
+	for (int i = 0; i < afterRotation.size(); i++)
+	{
+		int x = afterRotation[i].x + currentPiecePos.x;
+		int y = afterRotation[i].y + currentPiecePos.y;
+
+		if (x < 0)
+		{
+			int moveTmp = -x;
+			moveToTheRight = moveTmp > moveToTheRight ? moveTmp : moveToTheRight;
+		}
+		if (x >= this->columns)
+		{
+			int moveTmp = x + 1 - this->columns;
+			moveToTheLeft = moveTmp > moveToTheLeft ? moveTmp : moveToTheLeft;
+		}
+		if (y >= this->rows)
+		{
+			int moveTmp = y - 1 - this->rows;
+			moveDown = moveTmp > moveDown ? moveTmp : moveDown;
+		}
+	}
+
+	bool collidesWithFilled = false;
+	for (int i = 0; i < afterRotation.size(); i++)
+	{
+		int x = afterRotation[i].x + currentPiecePos.x + moveToTheRight - moveToTheLeft;
+		int y = afterRotation[i].y + currentPiecePos.y + moveDown;
+
+		if (cells[x][y] == Filled)
+		{
+			collidesWithFilled = true;
+		}
+	}
+
+	//actual rotation happening here
+	if ( collidesWithFilled == false){
+		this->rotation++;
+		this->currentPiecePos.x += moveToTheRight - moveToTheLeft;
+		this->currentPiecePos.y += moveDown;
+		this->rotation %= currentPiece.howManyRotations;
+	}
 }
 
 std::vector<Piece> pieces = {
