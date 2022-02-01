@@ -16,22 +16,36 @@ Board::Board(const int columns, const int y, const int cellWidth, int cellHeight
 		cell(Vector2f(cellWidth, cellHeight)),
 		currentPiecePos(columns / 2, 0),
 		currentPiece(pieces[0]),
-		nextPiece(pieces[0])
+		nextPiece(pieces[0]),
+		startingMoveTime(moveTime)
 {
 	this->columns = columns;
 	this->rows = y;
 	this->cellWidth = cellWidth;
 	this->cellHeight = cellHeight;
-
 	cells.resize(columns);
 	for (int i = 0; i < columns; ++i)
 	{
 		cells[i].resize(y);
 	}
+	cell.setOutlineColor(Color::Green);
+	cell.setOutlineThickness(cellWidth / 20);
 
+	startNewGame();
+}
+
+void Board::startNewGame()
+{
+	moveTime = startingMoveTime;
+	lost = false;
+
+	rowsToClearDelta = 0;
+	sinceLastBoardTick = 0;
+
+	int rotation = 0; //value 0, 1, 2, 3
 	for (int i = 0; i < columns; ++i)
 	{
-		for (int j = 0; j < y; ++j)
+		for (int j = 0; j < rows; ++j)
 		{
 			cells[i][j] = Empty;
 		}
@@ -40,8 +54,7 @@ Board::Board(const int columns, const int y, const int cellWidth, int cellHeight
 	nextPiece = pieces[rand() % pieces.size()];
 	this->createNewPiece();
 
-	cell.setOutlineColor(Color::Green);
-	cell.setOutlineThickness(cellWidth / 20);
+	this->notify(GameStarted, 0);
 }
 
 void Board::createNewPiece()
@@ -150,8 +163,12 @@ void Board::handleKeyPress(Keyboard::Key key)
 				turnPieceIntoFill();
 			}
 			break;
-		case Keyboard::Up:
 		case Keyboard::Space:
+		case Keyboard::Up:
+			if (this->lost)
+			{
+				this->startNewGame();
+			}
 			if (this->canRotate())
 			{
 				this->rotate();

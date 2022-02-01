@@ -4,7 +4,7 @@
 
 #include "Difficulty.hpp"
 
-Difficulty::Difficulty(float* moveTime) :
+Difficulty::Difficulty(float *moveTime) :
 		moveTime(moveTime)
 {
 	this->baseMoveTime = *moveTime;
@@ -15,6 +15,7 @@ void Difficulty::reactToEvent(EventType type, int data)
 	switch (type)
 	{
 		case RowsCleared:
+		{
 			difficulty += data;
 
 			float moveTime = baseMoveTime;
@@ -24,6 +25,11 @@ void Difficulty::reactToEvent(EventType type, int data)
 				moveTime -= moveTime / (float) 10;
 			}
 			*this->moveTime = moveTime;
+		}
+			break;
+		case GameStarted:
+			difficulty = 0;
+			*this->moveTime = baseMoveTime;
 			break;
 	}
 }

@@ -8,7 +8,7 @@
 
 enum EventType
 {
-	RowsCleared, Lost, NextPieceFiguredOut
+	RowsCleared, Lost, NextPieceFiguredOut, GameStarted
 };
 
 

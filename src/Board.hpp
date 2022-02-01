@@ -23,7 +23,8 @@ std::vector<Piece> extern pieces;
 class Board : public Subject
 {
 private:
-	const float& moveTime;
+	const float startingMoveTime;
+	float& moveTime;
 	int columns, rows;
 	int cellWidth, cellHeight;
 	vector<vector<FillType>> cells;
@@ -78,5 +79,7 @@ public:
 	bool stillPlaying();
 
 	Piece& getNextPiece();
+
+	void startNewGame();
 };
 

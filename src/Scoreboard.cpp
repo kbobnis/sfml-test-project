@@ -32,6 +32,11 @@ void Scoreboard::reactToEvent(EventType type, int data)
 			this->text.setFillColor(sf::Color::Red);
 			this->text.setString("Game lost. Score: " + std::to_string(lines));
 			break;
+		case EventType::GameStarted:
+			this->lines = 0;
+			this->text.setFillColor(sf::Color::White);
+			this->text.setString("Lines: " + std::to_string(lines));
+			break;
 	}
 }
 
