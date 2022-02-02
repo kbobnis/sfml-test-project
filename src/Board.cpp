@@ -74,7 +74,7 @@ void Board::createNewPiece()
 		int xPos = this->currentPiecePos.x + shapeAfterRotation[i].x;
 		int yPos = this->currentPiecePos.y + shapeAfterRotation[i].y;
 
-		if (xPos > 0 && yPos > 0 && cells[xPos][yPos] == Filled)
+		if (xPos >= 0 && yPos >= 0 && cells[xPos][yPos] == Filled)
 		{
 			this->lost = true;
 			this->notify(EventType::Lost, 0);

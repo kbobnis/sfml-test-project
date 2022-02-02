@@ -69,9 +69,10 @@ int main()
 			}
 		}
 
+		sf::Time time = clock.restart();
 		if (board.stillPlaying())
 		{
-			board.tick(clock.restart());
+			board.tick(time);
 
 			if (board.anyLinesToClear())
 			{
