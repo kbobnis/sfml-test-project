@@ -42,7 +42,7 @@ void Board::startNewGame()
 	rowsToClearDelta = 0;
 	sinceLastBoardTick = 0;
 
-	int rotation = 0; //value 0, 1, 2, 3
+	this->rotation = 0; //value 0, 1, 2, 3
 	for (int i = 0; i < columns; ++i)
 	{
 		for (int j = 0; j < rows; ++j)
@@ -359,7 +359,7 @@ void Board::rotateIfPossible()
 	int moveToTheLeft = 0;
 	int moveToTheRight = 0;
 	int moveDown = 0;
-	std::vector<Pair> afterRotation = currentPiece.GetShapeAfterRotation(this->rotation + 1);
+	std::vector<Pair> afterRotation = currentPiece.GetShapeAfterRotation((this->rotation + 1) % currentPiece.howManyRotations);
 	for (int i = 0; i < afterRotation.size(); i++)
 	{
 		int x = afterRotation[i].x + currentPiecePos.x;
